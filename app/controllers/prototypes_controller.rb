@@ -1,12 +1,15 @@
 class PrototypesController < ApplicationController
+  before_action :authenticate_user!, only: [:new, :create, :edit, :update, :destroy]
+
+  
   def index
     @prototypes = Prototype.all
   end
-
+  
   def new
     @prototype = Prototype.new
   end
-
+  
   def create
     @prototype = Prototype.create(prototype_params)
     if @prototype.save
@@ -15,7 +18,7 @@ class PrototypesController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
-
+  
   def show
     @prototype = Prototype.find(params[:id])
     @comment = Comment.new
@@ -23,7 +26,11 @@ class PrototypesController < ApplicationController
   end
 
   def edit
-    @prototype = Prototype.find(params[:id])
+    unless user_signed_in?
+      redirect_to action: :index
+    else
+      @prototype = Prototype.find(params[:id])
+    end
   end
 
   def update
